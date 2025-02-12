@@ -9,14 +9,8 @@ jobs:
     steps:
       - checkout
       - run: echo "Building things..."
-  # Second job declared is for building other things..
-  build_others:
-    executor: node/default
-    steps:
-      - checkout
-      - run: echo "Building other things..."
   # Second job declared is for launching unit tests with Jest
-  unit-tests:
+  unit_tests:
     executor: node/default
     environment:
       JEST_JUNIT_OUTPUT_DIR: ./test-results/
@@ -31,13 +25,37 @@ jobs:
           command: npm run test:ci
       - store_test_results:
           path: ./test-results/
+
+  deploy_dev:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Deploying to development environment..."
+
+  deploy_prod:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Deploying to production environment..."
 workflows:
   version: 2
-  build_and_test:
+  build-test-deploy:
     jobs:
       - build
-      - build_others:
-      - unit-tests:
+      - unit_tests:
           requires:
             - build
-            - build_others
+      - deploy_dev:
+          requires:
+            - unit_tests
+          filters:
+            branches:
+              only:
+                - develop
+      - deploy_prod:
+          requires:
+            - unit_tests
+          filters:
+            branches:
+              only:
+                - main
