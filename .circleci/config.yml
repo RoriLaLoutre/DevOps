@@ -263,8 +263,8 @@ workflows:
               - build-syntax
               - build-clean-package
         - test_complete:
-          requires:
-            - build-complete    ## pas de test ici car déja effectué sur release et encore en amont sur dev
+            requires:
+              - build-complete    ## pas de test ici car déja effectué sur release et encore en amont sur dev
         #lancement des jobs de deployment
         - prepare_environment:
             requires:
