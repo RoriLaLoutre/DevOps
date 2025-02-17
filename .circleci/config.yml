@@ -141,23 +141,26 @@ workflows:
               branches:
                 only:
                   - develop
+                  - /^feature\/.*/
         - build-syntax:
             filters:
               branches:
                 only:
                   - develop
+                  - /^feature\/.*/
         - build-clean-package:
             filters:
               branches:
                 only:
                   - develop
+                  - /^feature\/.*/                  
       # recuperation des jobs de building pour une meilleure lisibilité
         - build-complete:
             requires:
               - build-dependencies
               - build-syntax
               - build-clean-package 
-        #lancement en parallèle des jobs de tests
+        #lancement en parallèle des jobs de tests pour develop et les features car celles-ci doivent aussi être testé.
         - unit_tests:
             requires:
               - build-complete
@@ -165,6 +168,7 @@ workflows:
               branches:
                 only:
                   - develop
+                  - /^feature\/.*/
         - integration_tests:
             requires:
               - build-complete
@@ -172,6 +176,7 @@ workflows:
               branches:
                 only:
                   - develop
+                  - /^feature\/.*/                  
         - regression_tests:
             requires:
               - build-complete
@@ -179,6 +184,7 @@ workflows:
               branches:
                 only:
                   - develop
+                  - /^feature\/.*/                  
         - performance_tests:
             requires:
               - build-complete
@@ -186,6 +192,7 @@ workflows:
               branches:
                 only:
                   - develop
+                  - /^feature\/.*/
         - security_tests:
             requires:
               - build-complete
@@ -193,6 +200,7 @@ workflows:
               branches:
                 only:
                   - develop
+                  - /^feature\/.*/
         - compatibility_tests:
             requires:
               - build-complete
@@ -200,6 +208,7 @@ workflows:
               branches:
                 only:
                   - develop
+                  - /^feature\/.*/
         - accesibility_tests:
             requires:
               - build-complete
@@ -207,6 +216,7 @@ workflows:
               branches:
                 only:
                   - develop
+                  - /^feature\/.*/
               # recuperation des jobs de tests pour une meilleure lisibilité
         - test_complete:
             requires:
@@ -221,7 +231,8 @@ workflows:
               branches:
                 only:
                   - develop 
-          #lancement des jobs de deployment
+                  - /^feature\/.*/
+          #lancement des jobs de deployment seulement pour develop ici
         - prepare_environment:
             requires:
               - test_complete
