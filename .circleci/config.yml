@@ -136,7 +136,7 @@ workflows:
       #### ==========deployment sur branche develop========== ####
       jobs:
       #lancement en parallèle des jobs de building
-        - build-dependencies
+        - build-dependencies:
         - build-syntax:
         - build-clean-package:
       # recuperation des jobs de building pour une meilleure lisibilité
@@ -303,7 +303,7 @@ workflows:
               only:
                 - master
                 - main
-        - surverillance:
+        - surveillance:
             requires:
               - deploy_dev
             branches:
