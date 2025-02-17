@@ -170,27 +170,31 @@ workflows:
         - performance_tests:
             requires:
               - build-complete
-            branches:
-              only:
-                - develop
+            filters:
+              branches:
+                only:
+                  - develop
         - security_tests:
             requires:
               - build-complete
-            branches:
-              only:
-                - develop
+            filters:
+              branches:
+                only:
+                  - develop
         - compatibility_tests:
             requires:
               - build-complete
-            branches:
-              only:
-                - develop
+            filters:
+              branches:
+                only:
+                  - develop
         - accesibility_tests:
             requires:
               - build-complete
-            branches:
-              only:
-                - develop
+            filters:
+              branches:
+                only:
+                  - develop
               # recuperation des jobs de tests pour une meilleure lisibilité
         - test_complete:
             requires:
@@ -201,42 +205,48 @@ workflows:
               - security_tests
               - compatibility_tests
               - accesibility_tests
-            branches:
-              only:
-                - develop  
+            filters:
+              branches:
+                only:
+                  - develop 
           #lancement des jobs de deployment
         - prepare_environment:
             requires:
               - test_complete
-            branches:
-              only:
-                - develop
+            filters:
+              branches:
+                only:
+                  - develop
         - verification_tests:
             requires:
               - prepare_environment
-            branches:
-              only:
-                - develop
+            filters:
+              branches:
+                only:
+                  - develop
         - fonctional_tests:
             requires:
               - prepare_environment
-            branches:
-              only:
-                - develop
+            filters:
+              branches:
+                only:
+                  - develop
         - charge_tests:
             requires:
               - prepare_environment
-            branches:
-              only:
-                - develop
+            filters:
+              branches:
+                only:
+                  - develop
         - deploy_dev:
             requires:
               - verification_tests
               - fonctional_tests
               - charge_tests
-            branches:
-              only:
-                - develop
+            filters:
+              branches:
+                only:
+                  - develop
 
     #### ==========deployment sur branche main========== ####
 
