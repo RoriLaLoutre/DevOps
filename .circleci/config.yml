@@ -3,20 +3,39 @@ version: 2.1
 orbs:
   node: circleci/node@5
 jobs:
-  # First job declared is for building things..
-  build:
+  # ===================Jobs de building===================
+  build-dependencies:
     executor: node/default
     steps:
       - checkout
-      - run: echo "Building things..."
-  # Second job declared is for launching unit tests with Jest
+      - node/install-packages:            
+          pkg-manager: npm
+      - run: echo "Installations des dépendances..."
+  build-syntax:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Analyze du code..."
+  build-clean-package:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "cleaning et packaging..." 
+  build-complete:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Build complete..."
+  # ===================Fin de Jobs de building===================
+
+  # ===================Jobs de testing===========================
   unit_tests:
     executor: node/default
     environment:
       JEST_JUNIT_OUTPUT_DIR: ./test-results/
     steps:
       - checkout
-      - node/install-packages:
+      - node/install-packages:            
           pkg-manager: npm
       - run:
           command: npm install jest-junit
@@ -25,37 +44,260 @@ jobs:
           command: npm run test:ci
       - store_test_results:
           path: ./test-results/
+    integration_tests:
+      executor: node/default
+      steps:
+        - checkout
+        - run: echo "installation des dependences pour les test d'integration..."
+        - run: echo "Running integration tests..."
+    regression_tests:
+      executor: node/default
+      steps:
+        - checkout
+        - run: echo "installation des dependences pour les test de regressions..."
+        - run: echo "Running regression tests..."
+    performance_tests:
+      executor: node/default
+      steps:
+        - checkout
+        - run: echo "installation des dependences pour les test de performance..."
+        - run: echo "Running performance tests..."
+    security_tests:
+      executor: node/default
+      steps:
+        - checkout
+        - run: echo "installation des dependences pour les test de securité..."
+        - run: echo "Running security tests..."
+    compatibility_tests:
+      executor: node/default
+      steps:
+        - checkout
+        - run: echo "installation des dependences pour les test de compatibilité..."
+        - run: echo "Running compatibility tests..."
+    accesibility_tests:
+      executor: node/default
+      steps:
+        - checkout
+        - run: echo "installation des dependences pour les test d'accessibilité..."
+        - run: echo "Running accesibility tests..."
+    test_complete:
+      executor: node/default
+      steps:
+        - checkout
+        - run: echo "Tests complete"
 
+  # ===================Fin de Jobs de testing===========================
+
+  # ===================Jobs de deployment===========================
+  prepare_environment:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Preparing the deployment environment..."
+  verification_tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Verification tests..."
+  fonctional_tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Fonctional tests..."
+  charge_tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Charge tests (aucune idée de comment traduire celui la)..."
+  surveillance:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "surveillance..."
   deploy_dev:
     executor: node/default
     steps:
       - checkout
       - run: echo "Deploying to development environment..."
-
+  deploy_release:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Deploying to release environment..."
   deploy_prod:
     executor: node/default
     steps:
       - checkout
       - run: echo "Deploying to production environment..."
+  # ===================Fin de Jobs de deployment===========================
 workflows:
   version: 2
-  build-test-deploy:
-    jobs:
-      - build
-      - unit_tests:
+  deploy_to_develop:
+      #### ==========deployment sur branche develop========== ####
+      jobs:
+      #lancement en parallèle des jobs de building
+        - build-dependencies
+        - build-syntax:
+        - build-clean-package:
+      # recuperation des jobs de building pour une meilleure lisibilité
+        - build-complete:
           requires:
-            - build
-      - deploy_dev:
-          requires:
-            - unit_tests
-          filters:
+            - build-dependencies
+            - build-syntax
+            - build-clean-package 
+        #lancement en parallèle des jobs de tests
+        - unit_tests:
+            requires:
+              - build-complete
+            filters:
+              branches:
+                only:
+                  - develop
+        - integration_tests:
+            requires:
+              - build-complete
+            filters:
+              branches:
+                only:
+                  - develop
+        - regression_tests:
+            requires:
+              - build-complete
+            filters:
+              branches:
+                only:
+                  - develop
+        - performance_tests:
+            requires:
+              - build-complete
             branches:
               only:
                 - develop
-      - deploy_prod:
-          requires:
-            - unit_tests
-          filters:
+        - security_tests:
+            requires:
+              - build-complete
             branches:
               only:
+                - develop
+        - compatibility_tests:
+            requires:
+              - build-complete
+            branches:
+              only:
+                - develop
+        - accesibility_tests:
+            requires:
+              - build-complete
+            branches:
+              only:
+                - develop
+              # recuperation des jobs de tests pour une meilleure lisibilité
+        - test_complete:
+            requires:
+              - unit_tests
+              - integration_tests
+              - regression_tests
+              - performance_tests
+              - security_tests
+              - compatibility_tests
+              - accesibility_tests
+            branches:
+              only:
+                - develop  
+          #lancement des jobs de deployment
+        - prepare_environment:
+            requires:
+              - test_complete
+            branches:
+              only:
+                - develop
+        - verification_tests:
+            requires:
+              - prepare_environment
+            branches:
+              only:
+                - develop
+        - fonctional_tests:
+            requires:
+              - prepare_environment
+            branches:
+              only:
+                - develop
+        - charge_tests:
+            requires:
+              - prepare_environment
+            branches:
+              only:
+                - develop
+        - deploy_dev:
+            requires:
+              - verification_tests
+              - fonctional_tests
+              - charge_tests
+            branches:
+              only:
+                - develop
+
+    #### ==========deployment sur branche main========== ####
+
+  deploy_to_main:
+      jobs:
+      #lancement en parallèle des jobs de building
+        - build-dependencies
+        - build-syntax:
+        - build-clean-package:
+      # recuperation des jobs de building pour une meilleure lisibilité
+        - build-complete:
+          requires:
+            - build-dependencies
+            - build-syntax
+            - build-clean-package
+        - test_complete:
+          requires:
+            - build-complete    ## pas de test ici car déja effectué sur release et encore en amont sur dev
+        #lancement des jobs de deployment
+        - prepare_environment:
+            requires:
+              - test_complete
+            branches:
+              only:
+                - master
                 - main
+        - verification_tests:
+            requires:
+              - prepare_environment
+            branches:
+              only:
+                - master
+                - main
+        - fonctional_tests:
+            requires:
+              - prepare_environment
+            branches:
+              only:
+                - master
+                - main
+        - charge_tests:
+            requires:
+              - prepare_environment
+            branches:
+              only:
+                - master
+                - main
+        - deploy_dev:
+            requires:
+              - verification_tests
+              - fonctional_tests
+              - charge_tests
+            branches:
+              only:
+                - master
+                - main
+        - surverillance:
+            requires:
+              - deploy_dev
+            branches:
+              only:
+                - master
+                - main
+
