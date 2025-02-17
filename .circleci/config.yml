@@ -248,9 +248,10 @@ workflows:
                 only:
                   - develop
   filters:
-  branches:
-    only:
-      - develop
+    branches:
+      only:
+        - develop
+
 
     #### ==========deployment sur branche main========== ####
 
@@ -321,7 +322,8 @@ workflows:
                   - main
                   - master
   filters:
-  branches:
-    only:
-      - main
-      - master
+    branches:
+      only:
+        - main
+        - master
+
