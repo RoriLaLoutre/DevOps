@@ -253,7 +253,7 @@ workflows:
   deploy_to_main:
       jobs:
       #lancement en parallèle des jobs de building
-        - build-dependencies
+        - build-dependencies:
         - build-syntax:
         - build-clean-package:
       # recuperation des jobs de building pour une meilleure lisibilité
@@ -269,45 +269,51 @@ workflows:
         - prepare_environment:
             requires:
               - test_complete
-            branches:
-              only:
-                - master
-                - main
+            filters:
+              branches:
+                only:
+                  - main
+                  - master
         - verification_tests:
             requires:
               - prepare_environment
-            branches:
-              only:
-                - master
-                - main
+            filters:
+              branches:
+                only:
+                  - main
+                  - master
         - fonctional_tests:
             requires:
               - prepare_environment
-            branches:
-              only:
-                - master
-                - main
+            filters:
+              branches:
+                only:
+                  - main
+                  - master
         - charge_tests:
             requires:
               - prepare_environment
-            branches:
-              only:
-                - master
-                - main
+            filters:
+              branches:
+                only:
+                  - main
+                  - master
         - deploy_dev:
             requires:
               - verification_tests
               - fonctional_tests
               - charge_tests
-            branches:
-              only:
-                - master
-                - main
+            filters:
+              branches:
+                only:
+                  - main
+                  - master
         - surveillance:
             requires:
               - deploy_dev
-            branches:
-              only:
-                - master
-                - main
+            filters:
+              branches:
+                only:
+                  - main
+                  - master
 
