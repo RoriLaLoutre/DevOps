@@ -44,47 +44,47 @@ jobs:
           command: npm run test:ci
       - store_test_results:
           path: ./test-results/
-    integration_tests:
-      executor: node/default
-      steps:
-        - checkout
-        - run: echo "installation des dependences pour les test d'integration..."
-        - run: echo "Running integration tests..."
-    regression_tests:
-      executor: node/default
-      steps:
-        - checkout
-        - run: echo "installation des dependences pour les test de regressions..."
-        - run: echo "Running regression tests..."
-    performance_tests:
-      executor: node/default
-      steps:
-        - checkout
-        - run: echo "installation des dependences pour les test de performance..."
-        - run: echo "Running performance tests..."
-    security_tests:
-      executor: node/default
-      steps:
-        - checkout
-        - run: echo "installation des dependences pour les test de securité..."
-        - run: echo "Running security tests..."
-    compatibility_tests:
-      executor: node/default
-      steps:
-        - checkout
-        - run: echo "installation des dependences pour les test de compatibilité..."
-        - run: echo "Running compatibility tests..."
-    accesibility_tests:
-      executor: node/default
-      steps:
-        - checkout
-        - run: echo "installation des dependences pour les test d'accessibilité..."
-        - run: echo "Running accesibility tests..."
-    test_complete:
-      executor: node/default
-      steps:
-        - checkout
-        - run: echo "Tests complete"
+  integration_tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "installation des dependences pour les test d'integration..."
+      - run: echo "Running integration tests..."
+  regression_tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "installation des dependences pour les test de regressions..."
+      - run: echo "Running regression tests..."
+  performance_tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "installation des dependences pour les test de performance..."
+      - run: echo "Running performance tests..."
+  security_tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "installation des dependences pour les test de securité..."
+      - run: echo "Running security tests..."
+  compatibility_tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "installation des dependences pour les test de compatibilité..."
+      - run: echo "Running compatibility tests..."
+  accesibility_tests:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "installation des dependences pour les test d'accessibilité..."
+      - run: echo "Running accesibility tests..."
+  test_complete:
+    executor: node/default
+    steps:
+      - checkout
+      - run: echo "Tests complete"
 
   # ===================Fin de Jobs de testing===========================
 
