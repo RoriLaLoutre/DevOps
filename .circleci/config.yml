@@ -355,3 +355,115 @@ workflows:
                   - main
                   - master
 
+
+  deploy_to_release:
+      #### ==========deployment sur branche release========== ####
+      jobs:
+      #lancement en parallèle des jobs de building
+        - build-dependencies:
+            filters:
+              branches:
+                only:
+                  - release
+        - build-syntax:
+            filters:
+              branches:
+                only:
+                  - release
+        - build-clean-package:
+            filters:
+              branches:
+                only:
+                  - release
+      # recuperation des jobs de building pour une meilleure lisibilité
+        - build-complete:
+            requires:
+              - build-dependencies
+              - build-syntax
+              - build-clean-package 
+            filters:
+              branches:
+                only:
+                  - release
+        #nombre de tests réduit ici car sur un environnement qui doit etre semblable à la production de plus les tests ont déja été réalisé sur develop
+        - performance_tests:
+            requires:
+              - build-complete
+            filters:
+              branches:
+                only:
+                  - release
+        - security_tests:
+            requires:
+              - build-complete
+            filters:
+              branches:
+                only:
+                  - release
+        - compatibility_tests:
+            requires:
+              - build-complete
+            filters:
+              branches:
+                only:
+                  - release
+        - accesibility_tests:
+            requires:
+              - build-complete
+            filters:
+              branches:
+                only:
+                  - release
+              # recuperation des jobs de tests pour une meilleure lisibilité
+        - test_complete:
+            requires:
+              - unit_tests
+              - integration_tests
+              - regression_tests
+              - performance_tests
+              - security_tests
+              - compatibility_tests
+              - accesibility_tests
+            filters:
+              branches:
+                only:
+                  - release 
+          #lancement des jobs de deployment
+        - prepare_environment:
+            requires:
+              - test_complete
+            filters:
+              branches:
+                only:
+                  - release
+        - verification_tests:
+            requires:
+              - prepare_environment
+            filters:
+              branches:
+                only:
+                  - release
+        - fonctional_tests:
+            requires:
+              - prepare_environment
+            filters:
+              branches:
+                only:
+                  - release
+        - charge_tests:
+            requires:
+              - prepare_environment
+            filters:
+              branches:
+                only:
+                  - release
+        - deploy_dev:
+            requires:
+              - verification_tests
+              - fonctional_tests
+              - charge_tests
+            filters:
+              branches:
+                only:
+                  - release
+
