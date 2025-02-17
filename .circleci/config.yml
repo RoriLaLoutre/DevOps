@@ -136,9 +136,21 @@ workflows:
       #### ==========deployment sur branche develop========== ####
       jobs:
       #lancement en parallèle des jobs de building
-        - build-dependencies
-        - build-syntax
-        - build-clean-package
+        - build-dependencies:
+            filters:
+              branches:
+                only:
+                  - develop
+        - build-syntax:
+            filters:
+              branches:
+                only:
+                  - develop
+        - build-clean-package:
+            filters:
+              branches:
+                only:
+                  - develop
       # recuperation des jobs de building pour une meilleure lisibilité
         - build-complete:
             requires:
@@ -247,10 +259,6 @@ workflows:
               branches:
                 only:
                   - develop
-  filters:
-    branches:
-      only:
-        - develop
 
 
     #### ==========deployment sur branche main========== ####
@@ -258,18 +266,43 @@ workflows:
   deploy_to_main:
       jobs:
       #lancement en parallèle des jobs de building
-        - build-dependencies
-        - build-syntax
-        - build-clean-package
+        - build-dependencies:
+            filters:
+              branches:
+                only:
+                  - main
+                  - master
+        - build-syntax:
+            filters:
+              branches:
+                only:
+                  - main
+                  - master
+        - build-clean-package:
+            filters:
+              branches:
+                only:
+                  - main
+                  - master
       # recuperation des jobs de building pour une meilleure lisibilité
         - build-complete:
             requires:
               - build-dependencies
               - build-syntax
               - build-clean-package
-        - test_complete:
+            filters:
+              branches:
+                only:
+                  - main
+                  - master
+        - test_complete:      ## pas de test ici car déja effectué sur release et encore en amont sur dev
             requires:
-              - build-complete    ## pas de test ici car déja effectué sur release et encore en amont sur dev
+              - build-complete
+            filters:
+              branches:
+                only:
+                  - main
+                  - master
         #lancement des jobs de deployment
         - prepare_environment:
             requires:
@@ -303,7 +336,7 @@ workflows:
                 only:
                   - main
                   - master
-        - deploy_dev:
+        - deploy_prod:
             requires:
               - verification_tests
               - fonctional_tests
@@ -315,15 +348,10 @@ workflows:
                   - master
         - surveillance:
             requires:
-              - deploy_dev
+              - deploy_prod
             filters:
               branches:
                 only:
                   - main
                   - master
-  filters:
-    branches:
-      only:
-        - main
-        - master
 
